@@ -12,6 +12,13 @@ const ALLOWED_ORIGINS = [
   "https://www.rosariographics.com",
   "https://rosariographics.com",
 ];
+
+if (process.env.VERCEL_URL) {
+  ALLOWED_ORIGINS.push(`https://${process.env.VERCEL_URL}`);
+}
+if (process.env.NEXT_PUBLIC_SITE_URL) {
+  ALLOWED_ORIGINS.push(process.env.NEXT_PUBLIC_SITE_URL);
+}
 const MAX_BODY_BYTES = 10_240;
 
 const checkRate = rateLimit({ max: 5, windowMs: 60_000 });
