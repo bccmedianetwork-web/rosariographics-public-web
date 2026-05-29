@@ -290,8 +290,8 @@ export async function POST(request) {
       )
     );
 
-    // Fire both in parallel, never block the HTTP response
-    Promise.allSettled(emailTasks).catch(() => {});
+    // Esperar ambos emails antes de responder (confiabilidad serverless)
+    await Promise.allSettled(emailTasks);
 
     // ── Meta CAPI (LeadForm) via /api/capi ────────────────────────────────
     if (event_id && typeof event_id === "string") {
