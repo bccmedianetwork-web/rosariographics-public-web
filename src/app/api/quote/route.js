@@ -297,37 +297,39 @@ export async function POST(request) {
     if (event_id && typeof event_id === "string") {
       const { origin } = new URL(request.url);
 
-      fetch(`${origin}/api/capi`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          eventName: "LeadForm",
-          event_id,
-          user_data: {
-            em: [email],
-            ph: [phone],
-            fbp,
-            fbc,
-          },
-          custom_data: {
-            value: 0,
-            currency: "DOP",
-            service: tipo_letrero,
-            ...(utm_source ? { utm_source } : {}),
-            ...(utm_medium ? { utm_medium } : {}),
-            ...(utm_campaign ? { utm_campaign } : {}),
-          },
-        }),
-      })
-        .then(async (res) => {
-          if (!res.ok) {
-            const data = await res.json().catch(() => ({}));
-            log.error("Meta CAPI failed via proxy", { endpoint, ip, event_id, error: data.error });
-          } else {
-            log.info("Meta CAPI sent via proxy", { endpoint, ip, event_id, eventName: "LeadForm" });
-          }
-        })
-        .catch((err) => log.error("Meta CAPI proxy error", { endpoint, ip, event_id, error: err.message }));
+      try {
+        const capiRes = await fetch(`${origin}/api/capi`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            eventName: "LeadForm",
+            event_id,
+            user_data: {
+              em: [email],
+              ph: [phone],
+              fbp,
+              fbc,
+            },
+            custom_data: {
+              value: 0,
+              currency: "DOP",
+              service: tipo_letrero,
+              ...(utm_source ? { utm_source } : {}),
+              ...(utm_medium ? { utm_medium } : {}),
+              ...(utm_campaign ? { utm_campaign } : {}),
+            },
+          }),
+        });
+
+        if (capiRes.ok) {
+          log.info("Meta CAPI sent via proxy", { endpoint, ip, event_id, eventName: "LeadForm" });
+        } else {
+          const data = await capiRes.json().catch(() => ({}));
+          log.error("Meta CAPI failed via proxy", { endpoint, ip, event_id, error: data.error });
+        }
+      } catch (err) {
+        log.error("Meta CAPI proxy error", { endpoint, ip, event_id, error: err.message });
+      }
     }
 
     const response = {
