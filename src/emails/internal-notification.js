@@ -80,7 +80,7 @@ export function internalNotificationHtml({
         </div>
 
         <div class="footer">
-          <p>Rosario Graphics · Sistema de Captación · ${new Date().toLocaleString("es-DO")}</p>
+          <p>Rosario Graphics · Sistema de Captación · ${new Date().toISOString().split("T")[0].replace(/-/g, "/")}</p>
         </div>
 
       </div>

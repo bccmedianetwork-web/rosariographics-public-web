@@ -19,7 +19,7 @@ export default function Footer() {
           </div>
           <div className="w-full md:w-auto text-center md:text-left">
             <p className="text-sm text-gray-400">
-              © 2026 Rosario Graphics. Todos los derechos reservados. Santo Domingo, República Dominicana
+              © {new Date().getFullYear()} Rosario Graphics. Todos los derechos reservados. Santo Domingo, República Dominicana
             </p>
           </div>
           <div className="w-full md:w-auto mt-4 md:mt-0 flex justify-center md:justify-end space-x-4">

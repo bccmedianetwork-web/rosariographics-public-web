@@ -24,7 +24,7 @@ export default function ContactModal({ isOpen, onClose }) {
     tipo_letrero: "",
     ciudad: "",
     comentarios: "",
-    source_page: "WEB DIRECTA",
+    source_page: "",
   });
   const [fieldErrors, setFieldErrors] = useState({});
   const [status, setStatus] = useState({ type: "", message: "" });
@@ -43,6 +43,10 @@ export default function ContactModal({ isOpen, onClose }) {
     if (isOpen) {
       setFormOpenTime(Date.now());
       document.body.style.overflow = "hidden";
+      if (typeof window !== "undefined") {
+        const path = window.location.pathname;
+        setFormData((prev) => ({ ...prev, source_page: path === "/" ? "HOME" : path.slice(1).toUpperCase().replace(/\//g, "_") || "HOME" }));
+      }
       if (!document.getElementById("cf-turnstile-script")) {
         const script = document.createElement("script");
         script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
@@ -197,7 +201,6 @@ export default function ContactModal({ isOpen, onClose }) {
             )}
 
             <form className="space-y-4 mt-4" onSubmit={handleSubmit} noValidate>
-              <input type="hidden" name="source_page" value="WEB DIRECTA" />
 
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-300">Nombre Completo</label>

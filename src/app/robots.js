@@ -1,12 +1,14 @@
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.rosariographics.com";
+
 export default function robots() {
   return {
     rules: [
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin", "/api/"],
+        disallow: ["/api/"],
       },
     ],
-    sitemap: "https://rosariographics.com/sitemap.xml",
+    sitemap: `${BASE_URL}/sitemap.xml`,
   };
 }

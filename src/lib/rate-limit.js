@@ -1,11 +1,11 @@
 const rateMap = new Map();
 const CLEANUP_INTERVAL = 60_000;
 
-const timers = new Set();
+let cleanupTimer;
 
-if (typeof globalThis !== "undefined" && !timers.has(globalThis)) {
-  timers.add(globalThis);
-  setInterval(() => {
+function startCleanup() {
+  if (cleanupTimer) return;
+  cleanupTimer = setInterval(() => {
     const now = Date.now();
     for (const [key, entries] of rateMap) {
       const active = entries.filter((t) => t > now);
@@ -19,6 +19,7 @@ if (typeof globalThis !== "undefined" && !timers.has(globalThis)) {
 }
 
 export function rateLimit({ max = 5, windowMs = 60_000 } = {}) {
+  startCleanup();
   return (ip) => {
     const now = Date.now();
     const cutoff = now - windowMs;

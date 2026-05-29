@@ -7,6 +7,7 @@ const STATIC_ORIGINS = [
   "https://www.rosariographics.com",
   "https://rosariographics.com",
 ];
+const ALLOWED_EVENTS = ["LeadForm", "PageView", "LeadWhatsApp"];
 const MAX_BODY_BYTES = 10_240;
 
 const checkRate = rateLimit({ max: 10, windowMs: 60_000 });
@@ -78,9 +79,9 @@ export async function POST(request) {
     const body = JSON.parse(raw);
     const { eventName, event_id, user_data = {}, custom_data = {} } = body;
 
-    if (!eventName || typeof eventName !== "string") {
-      log.warn("Invalid eventName", { endpoint, ip, eventName });
-      return Response.json({ error: "eventName inválido" }, { status: 400 });
+    if (!eventName || typeof eventName !== "string" || !ALLOWED_EVENTS.includes(eventName)) {
+      log.warn("Invalid or disallowed eventName", { endpoint, ip, eventName });
+      return Response.json({ error: "eventName inválido o no permitido" }, { status: 400 });
     }
 
     if (!event_id || typeof event_id !== "string" || event_id.length < 10 || event_id.length > 100) {

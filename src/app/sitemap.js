@@ -1,27 +1,27 @@
-export default function sitemap() {
-  const baseUrl = "https://rosariographics.com";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.rosariographics.com";
 
+export default function sitemap() {
   return [
     {
-      url: baseUrl,
+      url: BASE_URL,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 1.0,
     },
     {
-      url: `${baseUrl}/nosotros`,
+      url: `${BASE_URL}/nosotros`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/contacto`,
+      url: `${BASE_URL}/contacto`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.7,
     },
     {
-      url: `${baseUrl}/privacidad`,
+      url: `${BASE_URL}/privacidad`,
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.3,

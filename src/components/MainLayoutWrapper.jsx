@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import ContactModal from "./ContactModal";
 import TrackingProvider from "./TrackingProvider";
 import { ModalContext } from "./ModalContext";
+
+const ContactModal = dynamic(() => import("./ContactModal"), { ssr: false });
 
 export default function MainLayoutWrapper({ children }) {
   const [modalOpen, setModalOpen] = useState(false);

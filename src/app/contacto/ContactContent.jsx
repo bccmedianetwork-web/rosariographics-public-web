@@ -23,9 +23,9 @@ export default function ContactContent() {
           <span className="inline-block bg-red-600 text-white text-[11px] font-medium tracking-widest uppercase px-3 py-1 rounded mb-4">
             Contacto
           </span>
-          <h2 className="text-3xl md:text-4xl font-medium text-white mb-3 tracking-tight">
+          <h1 className="text-3xl md:text-4xl font-medium text-white mb-3 tracking-tight">
             ¿Listo para transformar tu negocio?
-          </h2>
+          </h1>
           <p className="text-gray-400 text-[15px] max-w-[480px] mx-auto leading-relaxed">
             Contáctanos hoy y recibe una cotización gratis.
           </p>

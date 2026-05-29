@@ -23,6 +23,20 @@ function getTransporter() {
   });
 }
 
+async function sendWithRetry(transporter, mailOptions, retries = 3) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const info = await transporter.sendMail(mailOptions);
+      return info;
+    } catch (error) {
+      if (attempt === retries) throw error;
+      const delay = Math.min(1000 * Math.pow(2, attempt - 1), 4000);
+      log.warn("Mailer: reintentando envío", { attempt, retries, delay, error: error.message });
+      await new Promise((r) => setTimeout(r, delay));
+    }
+  }
+}
+
 export async function sendEmail({ to, subject, text, html, replyTo }) {
   const transporter = getTransporter();
 
@@ -32,7 +46,7 @@ export async function sendEmail({ to, subject, text, html, replyTo }) {
   }
 
   try {
-    const info = await transporter.sendMail({
+    const info = await sendWithRetry(transporter, {
       from: `"${process.env.SMTP_FROM_NAME || "Rosario Graphics"}" <${process.env.SMTP_FROM}>`,
       to,
       subject,
@@ -49,7 +63,7 @@ export async function sendEmail({ to, subject, text, html, replyTo }) {
 
     return { success: true, messageId: info.messageId };
   } catch (error) {
-    log.error("Mailer: Error al enviar email", {
+    log.error("Mailer: Error al enviar email tras reintentos", {
       to,
       subject,
       error: error.message,

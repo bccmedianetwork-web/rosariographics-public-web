@@ -115,8 +115,21 @@ export default function NosotrosPage() {
 
       <main>
         {/* HERO */}
-        <section className="hero-gradient py-10 px-6">
-          <div className="max-w-7xl mx-auto relative" />
+        <section className="hero-gradient py-16 px-6" aria-labelledby="nosotros-hero-title">
+          <div className="max-w-7xl mx-auto text-center">
+            <span className="inline-block bg-red-600 text-white text-xs font-semibold tracking-widest uppercase px-3 py-1 rounded mb-4">
+              Nosotros
+            </span>
+            <h1 id="nosotros-hero-title" className="text-3xl md:text-5xl font-bold text-white mb-4">
+              Más de 10 años transformando negocios en <span className="text-red-600">Santo Domingo</span>
+            </h1>
+            <p className="text-gray-300 text-sm md:text-base max-w-2xl mx-auto mb-8">
+              Expertos en fachadas ACM, letreros 3D y cajas de luz LED. Calidad premium, puntualidad y servicio personalizado.
+            </p>
+            <CotizarButton className="inline-block py-3 px-8 bg-red-600 hover:bg-red-700 rounded-lg text-white font-semibold transition-all shadow-lg shadow-red-700/40">
+              Solicitar Cotización
+            </CotizarButton>
+          </div>
         </section>
 
         {/* HISTORIA */}
