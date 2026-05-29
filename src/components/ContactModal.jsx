@@ -24,12 +24,11 @@ export default function ContactModal({ isOpen, onClose }) {
     tipo_letrero: "",
     ciudad: "",
     comentarios: "",
-    source_page: "",
   });
   const [fieldErrors, setFieldErrors] = useState({});
   const [status, setStatus] = useState({ type: "", message: "" });
   const [loading, setLoading] = useState(false);
-  const [formOpenTime, setFormOpenTime] = useState(null);
+  const formOpenTimeRef = useRef(null);
 
   const isValid = useMemo(() => {
     const nameOk = NAME_RE.test(formData.name.trim());
@@ -47,18 +46,8 @@ export default function ContactModal({ isOpen, onClose }) {
       return;
     }
 
-    setFormOpenTime(Date.now());
+    formOpenTimeRef.current = Date.now();
     document.body.style.overflow = "hidden";
-    if (typeof window !== "undefined") {
-      const path = window.location.pathname;
-      setFormData((prev) => ({
-        ...prev,
-        source_page:
-          path === "/"
-            ? "HOME"
-            : path.slice(1).toUpperCase().replace(/\//g, "_") || "HOME",
-      }));
-    }
 
     const container = turnstileRef.current;
 
@@ -159,15 +148,22 @@ export default function ContactModal({ isOpen, onClose }) {
 
     try {
       const submitTime = Date.now();
+      const sourcePage =
+        typeof window !== "undefined"
+          ? window.location.pathname === "/"
+            ? "HOME"
+            : window.location.pathname.slice(1).toUpperCase().replace(/\//g, "_") || "HOME"
+          : "WEB DIRECTA";
 
       const res = await fetch("/api/quote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
+          source_page: sourcePage,
           event_id: formEventId,
           turnstileToken,
-          form_open_time: formOpenTime,
+          form_open_time: formOpenTimeRef.current,
           form_submit_time: submitTime,
           ...tracking,
         }),
@@ -188,7 +184,6 @@ export default function ContactModal({ isOpen, onClose }) {
           tipo_letrero: "",
           ciudad: "",
           comentarios: "",
-          source_page: "WEB DIRECTA",
         });
         setFieldErrors({});
       } else {

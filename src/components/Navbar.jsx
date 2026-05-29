@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 const NAV_LINKS = [
   { href: "#proyectos", label: "Proyectos" },
@@ -26,7 +27,7 @@ export default function Navbar({ onOpenModal }) {
         scrolled ? "header-scrolled" : "header-default"
       }`}>
         <div className="flex justify-between items-center w-full max-w-7xl mx-auto">
-          <a className="flex items-center gap-2" href="/">
+          <Link className="flex items-center gap-2" href="/">
             <div style={{ width: "32px", height: "32px", position: "relative" }}>
               <Image
                 src="/images/icon-web1-64.png"
@@ -38,7 +39,7 @@ export default function Navbar({ onOpenModal }) {
               />
             </div>
             <span className="font-bold text-lg text-white">Rosario Graphics</span>
-          </a>
+          </Link>
 
           <ul className="hidden lg:flex gap-12 text-gray-300">
             {NAV_LINKS.map((link) => (

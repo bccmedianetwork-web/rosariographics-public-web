@@ -23,11 +23,10 @@ function pushPageView() {
 
 export default function TrackingProvider({ children }) {
   const pathname = usePathname();
-  const [trackingData, setTrackingData] = useState({});
+  const [trackingData, setTrackingData] = useState(() => readTrackingData());
 
   useEffect(() => {
     persistTrackingData();
-    setTrackingData(readTrackingData());
   }, []);
 
   useEffect(() => {
