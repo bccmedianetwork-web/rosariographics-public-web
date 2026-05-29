@@ -43,3 +43,5 @@ next-env.d.ts
 # local environment overrides and AI session memory
 .env*.local
 NOTES.md
+
+.vercel

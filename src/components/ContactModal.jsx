@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { generateEventId } from "@/lib/events";
 import { useTracking } from "./TrackingProvider";
 
@@ -17,6 +18,7 @@ const PHONE_RE = /^[\d\s\-+()]{6,20}$/;
 
 export default function ContactModal({ isOpen, onClose }) {
   const tracking = useTracking();
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -171,21 +173,25 @@ export default function ContactModal({ isOpen, onClose }) {
 
       if (res.ok) {
         const result = await res.json();
-        setStatus({
-          type: "success",
-          message: result.duplicate
-            ? "Ya recibimos tu solicitud anteriormente. Te contactaremos pronto."
-            : "¡Solicitud enviada! Te contactaremos en menos de 4 horas.",
-        });
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          tipo_letrero: "",
-          ciudad: "",
-          comentarios: "",
-        });
-        setFieldErrors({});
+
+        if (typeof window !== "undefined" && window.dataLayer) {
+          window.dataLayer.push({
+            event: "lead_success",
+            event_id: formEventId,
+            lead_number: result.lead_number,
+            user_data: {
+              email: formData.email,
+              phone: formData.phone,
+              name: formData.name,
+              city: formData.ciudad || undefined,
+              service: formData.tipo_letrero,
+            },
+          });
+        }
+
+        onClose();
+        router.push("/gracias");
+        return;
       } else {
         const errBody = await res.json().catch(() => ({}));
         setStatus({
