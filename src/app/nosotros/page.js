@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { businessJsonLd, serviceJsonLd } from "@/data/organization";
+import CotizarButton from "@/components/CotizarButton";
 
 export const metadata = {
   title: "Nosotros | Rosario Graphics - Expertos en Fachadas ACM y Letreros 3D",
@@ -211,12 +212,9 @@ export default function NosotrosPage() {
               Contáctanos hoy y recibe una cotización gratis
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <a
-                href="/contacto"
-                className="inline-block py-4 px-8 w-full md:w-auto text-base text-white bg-red-600 hover:bg-red-700 font-medium text-center rounded-md shadow-sm transition-all"
-              >
+              <CotizarButton className="inline-block py-4 px-8 w-full md:w-auto text-base text-white bg-red-600 hover:bg-red-700 font-medium text-center rounded-md shadow-sm transition-all">
                 Solicitar Cotización
-              </a>
+              </CotizarButton>
               <a
                 className="inline-block py-4 px-8 w-full md:w-auto text-base text-white bg-gray-700 hover:bg-gray-600 font-medium text-center rounded-md shadow-sm transition-all"
                 href="mailto:ventas@rosariographics.com"
