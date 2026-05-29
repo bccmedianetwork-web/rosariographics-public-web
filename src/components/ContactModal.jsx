@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { generateEventId } from "@/lib/events";
 import { useTracking } from "./TrackingProvider";
 
@@ -39,26 +39,57 @@ export default function ContactModal({ isOpen, onClose }) {
     return nameOk && emailOk && phoneOk && serviceOk;
   }, [formData]);
 
+  const turnstileRef = useRef(null);
+
   useEffect(() => {
-    if (isOpen) {
-      setFormOpenTime(Date.now());
-      document.body.style.overflow = "hidden";
-      if (typeof window !== "undefined") {
-        const path = window.location.pathname;
-        setFormData((prev) => ({ ...prev, source_page: path === "/" ? "HOME" : path.slice(1).toUpperCase().replace(/\//g, "_") || "HOME" }));
-      }
-      if (!document.getElementById("cf-turnstile-script")) {
-        const script = document.createElement("script");
-        script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
-        script.async = true;
-        script.defer = true;
-        script.id = "cf-turnstile-script";
-        document.head.appendChild(script);
-      }
-    } else {
+    if (!isOpen) {
       document.body.style.overflow = "";
+      return;
     }
-    return () => { document.body.style.overflow = ""; };
+
+    setFormOpenTime(Date.now());
+    document.body.style.overflow = "hidden";
+    if (typeof window !== "undefined") {
+      const path = window.location.pathname;
+      setFormData((prev) => ({
+        ...prev,
+        source_page:
+          path === "/"
+            ? "HOME"
+            : path.slice(1).toUpperCase().replace(/\//g, "_") || "HOME",
+      }));
+    }
+
+    const container = turnstileRef.current;
+
+    function renderWidget() {
+      if (window.turnstile && container) {
+        window.turnstile.render(container, {
+          sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+          theme: "dark",
+        });
+      }
+    }
+
+    const existingScript = document.getElementById("cf-turnstile-script");
+    if (!existingScript) {
+      const script = document.createElement("script");
+      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+      script.async = true;
+      script.defer = true;
+      script.id = "cf-turnstile-script";
+      script.onload = renderWidget;
+      document.head.appendChild(script);
+    } else {
+      renderWidget();
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+      if (window.turnstile && container) {
+        window.turnstile.remove(container);
+      }
+    };
   }, [isOpen]);
 
   const handleChange = (e) => {
@@ -275,7 +306,7 @@ export default function ContactModal({ isOpen, onClose }) {
                 />
               </div>
 
-              <div className="cf-turnstile mt-4" data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY} data-theme="dark" />
+              <div ref={turnstileRef} />
 
               <div className="pt-4 flex flex-col gap-3">
                 <button type="submit" disabled={loading || !isValid}
