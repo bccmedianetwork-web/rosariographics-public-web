@@ -8,6 +8,23 @@ Landing page + lead capture. Sin WhatsApp API, CRM admin, cron, ni tracking endp
 
 ## Lo Último que Hicimos
 
+### Auditoría 100% Verde (29 May 2026) — 10 correcciones
+
+**HIGH:**
+- `nosotros/page.js`: hero vacío → contenido real con H1, descripción y CTA (CotizarButton)
+- `robots.js` + `sitemap.js`: `BASE_URL` dinámico con `NEXT_PUBLIC_SITE_URL` fallback a `https://www.rosariographics.com`; `/admin` eliminado de disallow (ya no existe)
+- `ContactModal.jsx`: `source_page` se calcula de `window.location.pathname` en runtime; importado via `next/dynamic` con `ssr: false`
+
+**MEDIUM:**
+- `rate-limit.js`: timer simplificado (eliminado el patrón frágil `globalThis` + `Set`)
+- `capi/route.js`: agregado `ALLOWED_EVENTS = ["LeadForm", "PageView", "LeadWhatsApp"]` como whitelist
+- `ContactContent.jsx`: `<h2>` → `<h1>` para jerarquía SEO correcta
+- `Footer.jsx`: `2026` → `{new Date().getFullYear()}`
+
+**LOW:**
+- `mailer.js`: retry con exponential backoff (max 3 intentos, delay 1s→2s→4s)
+- `internal-notification.js`: `toLocaleString("es-DO")` → fecha ISO manual (`YYYY/MM/DD`)
+
 ### CSP — next.config.mjs
 - `script-src`: GTM, Turnstile, FB, GA, `googleads.g.doubleclick.net`, `www.googleadservices.com`, `unsafe-inline`, `unsafe-eval`
 - `img-src`: GTM, FB, LinkedIn, `www.google.com`, `www.google.com.do`, `*.google.com.do`, `www.googleadservices.com`, `googleads.g.doubleclick.net`
