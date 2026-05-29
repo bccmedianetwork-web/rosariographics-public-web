@@ -6,19 +6,12 @@ import { classifyLead } from "@/lib/classify";
 import { log } from "@/lib/logger";
 
 const ALLOWED_SERVICES = ["Letreros 3D", "Fachada ACM", "Caja de Luz", "Rotulacion Vehicular", "Otro"];
-const ALLOWED_ORIGINS = [
+const STATIC_ORIGINS = [
   "http://localhost:3000",
   "http://localhost:3001",
   "https://www.rosariographics.com",
   "https://rosariographics.com",
 ];
-
-if (process.env.VERCEL_URL) {
-  ALLOWED_ORIGINS.push(`https://${process.env.VERCEL_URL}`);
-}
-if (process.env.NEXT_PUBLIC_SITE_URL) {
-  ALLOWED_ORIGINS.push(process.env.NEXT_PUBLIC_SITE_URL);
-}
 const MAX_BODY_BYTES = 10_240;
 
 const checkRate = rateLimit({ max: 5, windowMs: 60_000 });
@@ -29,6 +22,15 @@ function getClientIp(request) {
     request.headers.get("x-real-ip") ||
     "127.0.0.1"
   );
+}
+
+function isOriginAllowed(origin) {
+  if (!origin) return true;
+  if (STATIC_ORIGINS.some((o) => origin.startsWith(o))) return true;
+  if (origin.endsWith(".vercel.app")) return true;
+  if (process.env.VERCEL_URL && origin === `https://${process.env.VERCEL_URL}`) return true;
+  if (process.env.NEXT_PUBLIC_SITE_URL && origin === process.env.NEXT_PUBLIC_SITE_URL) return true;
+  return false;
 }
 
 export async function POST(request) {
@@ -56,9 +58,9 @@ export async function POST(request) {
       );
     }
 
-    // ── Origin / Referer check ─────────────────────────────────────────────
+    // ── Origin / Referer check (runtime) ───────────────────────────────────
     const origin = request.headers.get("origin") || request.headers.get("referer") || "";
-    if (origin && !ALLOWED_ORIGINS.some((o) => origin.startsWith(o))) {
+    if (!isOriginAllowed(origin)) {
       log.warn("Origin not allowed", { endpoint, ip, origin });
       return Response.json({ error: "Origen no autorizado" }, { status: 403 });
     }
